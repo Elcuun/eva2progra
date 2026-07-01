@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: pedido-service
+  datasource:
+    url: ${PEDIDO_DB_URL:jdbc:mysql://localhost:3306/bd_pedidos}
+    username: ${PEDIDO_DB_USERNAME:root}
+    password: ${PEDIDO_DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+server:
+  port: 0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+    prefer-ip-address: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${PEDIDO_DB_URL}
+    username: ${PEDIDO_DB_USERNAME}
+    password: ${PEDIDO_DB_PASSWORD}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}

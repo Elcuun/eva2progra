@@ -1,0 +1,237 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: carstor-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - carstor-net
+
+  eureka-service:
+    build:
+      context: ./eureka-service
+    container_name: carstor-eureka
+    environment:
+      SERVER_PORT: 8761
+    ports:
+      - "8761:8761"
+    networks:
+      - carstor-net
+
+  config-server:
+    build:
+      context: ./config-server
+    container_name: carstor-config-server
+    environment:
+      SERVER_PORT: 8888
+      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/app/config-microservicios
+    volumes:
+      - ./config-microservicios:/app/config-microservicios:ro
+    depends_on:
+      - eureka-service
+    networks:
+      - carstor-net
+
+  cliente-service:
+    build:
+      context: ./cliente-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-service:8761/eureka/
+      CLIENTE_DB_URL: jdbc:mysql://mysql:3306/bd_clientes
+      CLIENTE_DB_USERNAME: root
+      CLIENTE_DB_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-service:
+        condition: service_started
+    networks:
+      - carstor-net
+
+  empleado-service:
+    build:
+      context: ./empleado-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-service:8761/eureka/
+      EMPLEADO_DB_URL: jdbc:mysql://mysql:3306/bd_empleados
+      EMPLEADO_DB_USERNAME: root
+      EMPLEADO_DB_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-service:
+        condition: service_started
+    networks:
+      - carstor-net
+
+  producto-service:
+    build:
+      context: ./producto-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-service:8761/eureka/
+      PRODUCTO_DB_URL: jdbc:mysql://mysql:3306/bd_productos
+      PRODUCTO_DB_USERNAME: root
+      PRODUCTO_DB_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-service:
+        condition: service_started
+    networks:
+      - carstor-net
+
+  sucursal-service:
+    build:
+      context: ./sucursal-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-service:8761/eureka/
+      SUCURSAL_DB_URL: jdbc:mysql://mysql:3306/bd_sucursales
+      SUCURSAL_DB_USERNAME: root
+      SUCURSAL_DB_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-service:
+        condition: service_started
+    networks:
+      - carstor-net
+
+  pedido-service:
+    build:
+      context: ./pedido-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-service:8761/eureka/
+      PEDIDO_DB_URL: jdbc:mysql://mysql:3306/bd_pedidos
+      PEDIDO_DB_USERNAME: root
+      PEDIDO_DB_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-service:
+        condition: service_started
+      cliente-service:
+        condition: service_started
+      empleado-service:
+        condition: service_started
+    networks:
+      - carstor-net
+
+  envio-service:
+    build:
+      context: ./envio-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-service:8761/eureka/
+      ENVIO_DB_URL: jdbc:mysql://mysql:3306/bd_envios
+      ENVIO_DB_USERNAME: root
+      ENVIO_DB_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-service:
+        condition: service_started
+    networks:
+      - carstor-net
+
+  inventario-service:
+    build:
+      context: ./inventario-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-service:8761/eureka/
+      INVENTARIO_DB_URL: jdbc:mysql://mysql:3306/bd_inventarios
+      INVENTARIO_DB_USERNAME: root
+      INVENTARIO_DB_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-service:
+        condition: service_started
+    networks:
+      - carstor-net
+
+  boleta-service:
+    build:
+      context: ./boleta-service
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-service:8761/eureka/
+      BOLETA_DB_URL: jdbc:mysql://mysql:3306/bd_boletas
+      BOLETA_DB_USERNAME: root
+      BOLETA_DB_PASSWORD: root
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-service:
+        condition: service_started
+    networks:
+      - carstor-net
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: carstor-api-gateway
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_URL: http://eureka-service:8761/eureka/
+    ports:
+      - "8090:8090"
+    depends_on:
+      config-server:
+        condition: service_started
+      eureka-service:
+        condition: service_started
+      cliente-service:
+        condition: service_started
+      empleado-service:
+        condition: service_started
+      producto-service:
+        condition: service_started
+      sucursal-service:
+        condition: service_started
+      pedido-service:
+        condition: service_started
+      envio-service:
+        condition: service_started
+      inventario-service:
+        condition: service_started
+      boleta-service:
+        condition: service_started
+    networks:
+      - carstor-net
+
+networks:
+  carstor-net:
+    driver: bridge
+
+volumes:
+  mysql-data:

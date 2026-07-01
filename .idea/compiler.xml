@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="api-gateway" />
+        <module name="eureka-service" />
+        <module name="config-server" />
+      </profile>
+      <profile name="Annotation profile for sucursal-service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
+        </processorPath>
+        <module name="sucursal-service" />
+        <module name="cliente-service" />
+        <module name="producto-service" />
+        <module name="empleado-service (2)" />
+        <module name="empleado-service (1)" />
+        <module name="inventario-service (1)" />
+        <module name="empleado-service" />
+        <module name="boleta-service" />
+        <module name="pedido-service" />
+        <module name="inventario-service" />
+        <module name="envio-service" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api-gateway" options="-parameters" />
+      <module name="boleta-service" options="-parameters" />
+      <module name="cliente-service" options="-parameters" />
+      <module name="config-server" options="-parameters" />
+      <module name="empleado-service" options="-parameters" />
+      <module name="empleado-service (1)" options="-parameters" />
+      <module name="empleado-service (2)" options="-parameters" />
+      <module name="envio-service" options="-parameters" />
+      <module name="eureka-service" options="-parameters" />
+      <module name="inventario-service" options="-parameters" />
+      <module name="inventario-service (1)" options="-parameters" />
+      <module name="pedido-service" options="-parameters" />
+      <module name="producto-service" options="-parameters" />
+      <module name="sucursal-service" options="-parameters" />
+    </option>
+  </component>
+</project>

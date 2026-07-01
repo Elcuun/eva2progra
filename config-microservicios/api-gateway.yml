@@ -1,0 +1,138 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          default-filters:
+            - AddResponseHeader=X-Gateway, carstor-api-gateway
+          routes:
+            - id: cliente-service
+              uri: lb://cliente-service
+              predicates:
+                - Path=/api/v1/clientes/**
+            - id: empleado-service
+              uri: lb://empleado-service
+              predicates:
+                - Path=/api/v1/empleados/**
+            - id: producto-service
+              uri: lb://producto-service
+              predicates:
+                - Path=/api/v1/productos/**
+            - id: sucursal-service
+              uri: lb://sucursal-service
+              predicates:
+                - Path=/api/v1/sucursales/**
+            - id: pedido-service
+              uri: lb://pedido-service
+              predicates:
+                - Path=/api/v1/pedidos/**
+            - id: envio-service
+              uri: lb://envio-service
+              predicates:
+                - Path=/api/v1/envios/**
+            - id: inventario-service
+              uri: lb://inventario-service
+              predicates:
+                - Path=/api/v1/inventarios/**
+            - id: detalle-pedido-service
+              uri: lb://pedido-service
+              predicates:
+                - Path=/api/v1/detallepedidos/**
+            - id: boleta-service
+              uri: lb://boleta-service
+              predicates:
+                - Path=/api/v1/boletas/**
+            - id: producto-openapi
+              uri: lb://producto-service
+              predicates:
+                - Path=/producto-service/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: pedido-openapi
+              uri: lb://pedido-service
+              predicates:
+                - Path=/pedido-service/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: cliente-openapi
+              uri: lb://cliente-service
+              predicates:
+                - Path=/cliente-service/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: empleado-openapi
+              uri: lb://empleado-service
+              predicates:
+                - Path=/empleado-service/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: sucursal-openapi
+              uri: lb://sucursal-service
+              predicates:
+                - Path=/sucursal-service/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: envio-openapi
+              uri: lb://envio-service
+              predicates:
+                - Path=/envio-service/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: inventario-openapi
+              uri: lb://inventario-service
+              predicates:
+                - Path=/inventario-service/v3/api-docs
+              filters:
+                - StripPrefix=1
+            - id: boleta-openapi
+              uri: lb://boleta-service
+              predicates:
+                - Path=/boleta-service/v3/api-docs
+              filters:
+                - StripPrefix=1
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: producto-service
+        url: /producto-service/v3/api-docs
+      - name: pedido-service
+        url: /pedido-service/v3/api-docs
+      - name: cliente-service
+        url: /cliente-service/v3/api-docs
+      - name: empleado-service
+        url: /empleado-service/v3/api-docs
+      - name: sucursal-service
+        url: /sucursal-service/v3/api-docs
+      - name: envio-service
+        url: /envio-service/v3/api-docs
+      - name: inventario-service
+        url: /inventario-service/v3/api-docs
+      - name: boleta-service
+        url: /boleta-service/v3/api-docs
+
+server:
+  port: 8090
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
